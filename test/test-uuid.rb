@@ -8,13 +8,6 @@ require 'uuid'
 
 class TestUUID < Test::Unit::TestCase
 
-  def test_state_file_creation
-    path = UUID.state_file
-    File.delete path if File.exist?(path)
-    UUID.new.generate
-    File.exist?(path)
-  end
-  
   def test_instance_generate
     uuid = UUID.new
     assert_match(/\A[\da-f]{32}\z/i, uuid.generate(:compact))
@@ -68,14 +61,14 @@ class TestUUID < Test::Unit::TestCase
     assert_equal foo.mac, bar.mac
   end
   
-  def test_increasing_sequence
+  def test_shared_sequence
     class << foo = UUID.new
       attr_reader :sequence
     end
     class << bar = UUID.new
       attr_reader :sequence
     end
-    assert_equal foo.sequence + 1, bar.sequence
+    assert_equal foo.sequence, bar.sequence
   end
 
 end
