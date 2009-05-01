@@ -1,7 +1,13 @@
 = UUID Generator
 
-Generates universally unique identifiers (UUIDs) for use in distributed
-applications. Based on {RFC 4122}[http://www.ietf.org/rfc/rfc4122.txt].
+Generates universally unique identifiers (UUIDs) for use in
+distributed applications. Based on {RFC
+4122}[http://www.ietf.org/rfc/rfc4122.txt].  This gem is a modified
+version of {uuid}[http://github.com/assaf/uuid] that does not use a
+state file to track the UUID sequence number across invocations.  This
+simplifies the implementation, elimates permissions issues associated
+with the global state file, and still gives reasonable uniqueness
+guarantees for the generated UUIDs.
 
 
 == Generating UUIDs
@@ -47,44 +53,29 @@ the node identifier.
 For more information see {RFC 4122}[http://www.ietf.org/rfc/rfc4122.txt].
 
 
-== UUID State File
+== UUID No State File
 
-The UUID generator uses a state file to hold the MAC address and sequence
-number.
+The UUID generator does not use a state file to hold the MAC address
+nor the sequence number.  Instead, the MAC address is determined when
+a new UUID instance is created and the sequence number is initialized
+using <tt>rand</tt> and shared as a class variable.
 
 The MAC address is used to generate identifiers that are unique to your
 machine, preventing conflicts in distributed applications. The MAC
 address is six bytes (48 bit) long. It is automatically extracted from
 one of the network cards on your machine.
 
-The sequence number is incremented each time the UUID generator is
-first used by the application, to prevent multiple processes from
-generating the same set of identifiers, and deal with changes to the
-system clock.
-
-The UUID state file is created in <tt>/var/tmp/ruby-uuid</tt> or the Windows
-common application data directory using mode 0644.  If that directory is not
-writable, the file is created as <tt>.ruby-uuid</tt> in the home directory.
-If you need to create the file with a different mode, use UUID#state_file
-before running the UUID generator.
-
-State files are not portable across machines.
+The sequence number is incremented if the code detects that the clock
+has been set back in time.
 
 
 == Latest and Greatest
 
-Stable release are made through RubyForge, to upgrade simply:
-
-  gem upgrade uuid
-
-You can subscribe for notifications of new releases through the reliable-msg
-project page at http://rubyforge.org/projects/reliable-msg
-
-Source code and documentation hosted on Github: http://github.com/assaf/uuid
+Source code and documentation hosted on Github: http://github.com/seth/uuid
 
 To get UUID from source:
 
-  git clone git://github.com/assaf/uuid.git
+  git clone git://github.com/seth/uuid.git
 
 
 == License
